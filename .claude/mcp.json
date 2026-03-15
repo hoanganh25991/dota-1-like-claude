@@ -1,0 +1,33 @@
+{
+  "mcpServers": {
+    "openrouter-image": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@mindbreaker81/openrouter-image",
+        "server",
+        "--stdio"
+      ],
+      "env": {
+        "OUTPUT_DIR": "/Users/anhle/work-station/dota-1-like"
+      }
+    },
+    "freesound": {
+      "command": "node",
+      "args": [
+        "~/tools/freesound-mcp-server/dist/index.js"
+      ]
+    },
+    "n8n-workflow-builder": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "n8n-workflow-builder-mcp"
+      ],
+      "env": {
+        "N8N_API_URL": "http://localhost:5678",
+        "N8N_API_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjYTJiMzE1MS0yMjRjLTQwYTctYjA0Ni00OTc0YWJjYzc1MzIiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwianRpIjoiMTc1N2Q3ZjktNjIzZi00YTNiLTkyMmEtODA4MDY1ZDdkN2ZhIiwiaWF0IjoxNzczNTAwMjQ3LCJleHAiOjE3NzYwNTI4MDB9.ba4z3SK7JXsdQRv3bvHIWAn3BwOSPHWRKbwYW-372kU"
+      }
+    }
+  }
+}

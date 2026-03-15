@@ -1,0 +1,37 @@
+---
+alwaysApply: true
+---
+# SDLC — docs/index.md is the source of truth
+
+This project tracks all progress in **docs/index.md**. You MUST follow this workflow for every implementation task.
+
+## Before writing any code
+
+1. **Read `docs/index.md`** — check the Done, Requirements Plan, and Backlog sections. Confirm the task is in scope.
+2. **Read the relevant spec** — follow links in index.md to the spec that covers your task (plan.md, heroes/index.md, theme.md, menu.md).
+3. If the task is not listed in Requirements Plan or Backlog, confirm with the user before implementing.
+
+## After implementing
+
+1. **Update `docs/index.md`** immediately:
+   - If you completed a Requirements Plan item → move it to **Done** with a description of what was shipped.
+   - If you partially completed it → leave it in Requirements Plan and note what remains.
+   - If you added something new (not previously listed) → add it to **Done**.
+2. **If code diverges from a spec**, update the spec doc or the code to keep them aligned.
+
+## Structure of docs/index.md Plan section
+
+- **Done** — verified shipped features.
+- **Requirements Plan** — scoped items ready to implement (numbered, prioritized).
+- **Backlog** — future items, not yet scoped.
+
+## Docs files
+
+| File | Content |
+|------|---------|
+| `docs/index.md` | SDLC hub — progress tracking |
+| `docs/plan.md` | Game rules & systems spec |
+| `docs/heroes/` | Hero geometry, stats, skills (index + per-hero files) |
+| `docs/theme.md` | Visual/audio theme |
+| `docs/menu.md` | Menu flow |
+| `docs/brief.md` | Original brief |

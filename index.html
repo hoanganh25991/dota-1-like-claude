@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#07070f" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>Crimson Lane</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/hero-viewer.css" />
+
+  <!-- Three.js r160 from CDN — must load before game modules -->
+  <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════
+     LOADING SCREEN
+════════════════════════════════════════════════════════════ -->
+<div id="loading-screen">
+  <div class="menu-logo">
+    <h1 class="game-title">CRIMSON LANE</h1>
+    <div class="subtitle">DARK FANTASY MOBA</div>
+  </div>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="load-bar"></div>
+  </div>
+  <div class="load-stage" id="load-stage">Initializing…</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     MAIN MENU
+════════════════════════════════════════════════════════════ -->
+<div id="main-menu" class="screen hidden">
+  <div class="menu-logo">
+    <h1>CRIMSON LANE</h1>
+    <div class="subtitle">MOBILE MOBA</div>
+  </div>
+
+  <div class="menu-buttons">
+    <button class="btn-primary" id="btn-play">PLAY</button>
+    <button disabled title="Coming soon">MULTIPLAYER</button>
+    <button id="btn-settings">SETTINGS</button>
+  </div>
+
+  <div class="menu-version">v0.1.0 · 2026</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     PLAY FLOW (side + mode selection)
+════════════════════════════════════════════════════════════ -->
+<div id="play-flow" class="screen hidden">
+
+  <!-- Step 1: Pick a side -->
+  <div class="flow-step" id="flow-step-1">
+    <h2>Choose Your Side</h2>
+    <div class="choice-grid">
+      <button class="choice-btn sentinel" data-side="sentinel" id="btn-sentinel">
+        ⚔ SENTINEL
+      </button>
+      <button class="choice-btn scourge" data-side="scourge" id="btn-scourge">
+        💀 SCOURGE
+      </button>
+    </div>
+    <div id="side-desc" style="font-size:11px;color:#666688;text-align:center;max-width:240px;line-height:1.7;">
+      Select a side to continue.
+    </div>
+    <div class="flow-nav">
+      <button id="btn-flow-back-1">BACK</button>
+      <button class="btn-primary" id="btn-flow-next-1" disabled>CONTINUE</button>
+    </div>
+  </div>
+
+  <!-- Step 2: Pick game mode -->
+  <div class="flow-step hidden" id="flow-step-2">
+    <h2>Select Mode</h2>
+    <div class="choice-grid">
+      <button class="choice-btn" data-mode="5" id="btn-mode-5">
+        5 v 5
+      </button>
+      <button class="choice-btn" data-mode="3" id="btn-mode-3">
+        3 v 3
+      </button>
+      <button class="choice-btn" data-mode="1" id="btn-mode-1">
+        1 v 1
+      </button>
+    </div>
+    <div class="flow-nav">
+      <button id="btn-flow-back-2">BACK</button>
+      <button class="btn-primary" id="btn-flow-next-2" disabled>CONTINUE</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     SETTINGS SCREEN
+════════════════════════════════════════════════════════════ -->
+<div id="settings-screen" class="screen hidden">
+  <div class="settings-wrap">
+    <div class="settings-header">
+      <h2>SETTINGS</h2>
+      <button id="btn-settings-back">BACK</button>
+    </div>
+
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="general">General</button>
+      <button class="tab-btn" data-tab="audio">Audio</button>
+      <button class="tab-btn" data-tab="hero-viewer">Hero Viewer</button>
+    </div>
+
+    <!-- General tab -->
+    <div class="settings-tab-content active" id="settings-tab-general">
+      <div class="setting-row">
+        <label>Camera Speed</label>
+        <input type="range" id="set-cam-speed" min="1" max="10" value="5" />
+      </div>
+      <div class="setting-row">
+        <label>Joystick Sensitivity</label>
+        <input type="range" id="set-joystick-sens" min="1" max="10" value="5" />
+      </div>
+      <div class="setting-row">
+        <label>Show Damage Numbers</label>
+        <input type="checkbox" id="set-dmg-numbers" checked />
+      </div>
+      <div class="setting-row">
+        <label>Show Minimap</label>
+        <input type="checkbox" id="set-minimap" checked />
+      </div>
+      <div class="setting-row">
+        <label>HUD Idle Fade</label>
+        <input type="checkbox" id="set-idle-fade" checked />
+      </div>
+      <div class="setting-row">
+        <label>Graphics Quality</label>
+        <select id="set-quality" style="background:#0d0d1a;color:#e0d8c8;border:1px solid #3a3a5a;border-radius:3px;padding:4px 8px;font-size:11px;font-family:inherit;">
+          <option value="low">Low</option>
+          <option value="medium" selected>Medium</option>
+          <option value="high">High</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Audio tab -->
+    <div class="settings-tab-content" id="settings-tab-audio">
+      <div class="setting-row">
+        <label>Master Volume</label>
+        <input type="range" id="set-vol-master" min="0" max="100" value="80" />
+      </div>
+      <div class="setting-row">
+        <label>SFX Volume</label>
+        <input type="range" id="set-vol-sfx" min="0" max="100" value="80" />
+      </div>
+      <div class="setting-row">
+        <label>Ambient Volume</label>
+        <input type="range" id="set-vol-ambient" min="0" max="100" value="40" />
+      </div>
+      <div class="setting-row">
+        <label>Announcer</label>
+        <input type="checkbox" id="set-announcer" checked />
+      </div>
+    </div>
+
+    <!-- Hero Viewer tab — embeds the hero viewer panel -->
+    <div class="settings-tab-content" id="settings-tab-hero-viewer">
+      <div style="margin-top:8px;">
+        <!-- Hero Viewer Panel -->
+        <div id="hero-viewer-panel">
+
+          <!-- Top: canvas + stats -->
+          <div class="hv-top">
+            <div class="hv-canvas-wrap">
+              <canvas id="hv-canvas"></canvas>
+              <div class="hv-canvas-label">
+                <div id="hv-hero-name-display">LICH</div>
+                <div id="hv-hero-role-display">Intelligence · Support</div>
+              </div>
+            </div>
+            <div class="hv-stats">
+              <div class="hv-stats-title">Base Stats</div>
+
+              <div class="hv-attr-row">
+                <div class="hv-attr-badge str-badge" id="hv-attr-str">STR</div>
+                <div class="hv-attr-badge agi-badge" id="hv-attr-agi">AGI</div>
+                <div class="hv-attr-badge int-badge primary" id="hv-attr-int">INT ★</div>
+              </div>
+
+              <div class="hv-stat-row">
+                <span class="hv-stat-label">Strength</span>
+                <span class="hv-stat-val str" id="hv-stat-str">18</span>
+              </div>
+              <div class="hv-stat-row">
+                <span class="hv-stat-label">Agility</span>
+                <span class="hv-stat-val agi" id="hv-stat-agi">16</span>
+              </div>
+              <div class="hv-stat-row">
+                <span class="hv-stat-label">Intelligence</span>
+                <span class="hv-stat-val int" id="hv-stat-int">22</span>
+              </div>
+              <hr class="hv-stats-divider" />
+              <div class="hv-stat-row">
+                <span class="hv-stat-label">HP</span>
+                <span class="hv-stat-val" id="hv-stat-hp">492</span>
+              </div>
+              <div class="hv-stat-row">
+                <span class="hv-stat-label">Mana</span>
+                <span class="hv-stat-val" id="hv-stat-mp">286</span>
+              </div>
+              <div class="hv-stat-row">
+                <span class="hv-stat-label">Damage</span>
+                <span class="hv-stat-val" id="hv-stat-dmg">38–44</span>
+              </div>
+              <div class="hv-stat-row">
+                <span class="hv-stat-label">Armor</span>
+                <span class="hv-stat-val" id="hv-stat-armor">1.1</span>
+              </div>
+              <div class="hv-stat-row">
+                <span class="hv-stat-label">Move Speed</span>
+                <span class="hv-stat-val" id="hv-stat-ms">295</span>
+              </div>
+              <div class="hv-stat-row">
+                <span class="hv-stat-label">Attack Range</span>
+                <span class="hv-stat-val" id="hv-stat-range">600</span>
+              </div>
+              <div class="hv-stat-row">
+                <span class="hv-stat-label">Attack Speed</span>
+                <span class="hv-stat-val" id="hv-stat-as">1.4s</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Skill grid -->
+          <div class="hv-skills">
+            <!-- Q -->
+            <div class="hv-skill-card selected" data-skill="Q" id="hv-skill-Q">
+              <div class="hv-skill-header">
+                <div class="hv-skill-icon">❄️</div>
+                <div class="hv-skill-meta">
+                  <div class="hv-skill-name">Frost Nova</div>
+                  <div class="hv-skill-key">Q — Active</div>
+                </div>
+              </div>
+              <div class="hv-skill-desc">Freezes an enemy in place and deals AoE damage around them.</div>
+              <div class="hv-skill-stats">
+                <span class="hv-skill-stat mana">100 MP</span>
+                <span class="hv-skill-stat cd">12s CD</span>
+                <span class="hv-skill-stat">140 dmg</span>
+              </div>
+            </div>
+            <!-- W -->
+            <div class="hv-skill-card" data-skill="W" id="hv-skill-W">
+              <div class="hv-skill-header">
+                <div class="hv-skill-icon">💀</div>
+                <div class="hv-skill-meta">
+                  <div class="hv-skill-name">Dark Ritual</div>
+                  <div class="hv-skill-key">W — Active</div>
+                </div>
+              </div>
+              <div class="hv-skill-desc">Sacrifice an allied creep to restore Lich's mana.</div>
+              <div class="hv-skill-stats">
+                <span class="hv-skill-stat mana">0 MP</span>
+                <span class="hv-skill-stat cd">35s CD</span>
+                <span class="hv-skill-stat">+200 MP</span>
+              </div>
+            </div>
+            <!-- E -->
+            <div class="hv-skill-card" data-skill="E" id="hv-skill-E">
+              <div class="hv-skill-header">
+                <div class="hv-skill-icon">🛡️</div>
+                <div class="hv-skill-meta">
+                  <div class="hv-skill-name">Frost Shield</div>
+                  <div class="hv-skill-key">E — Passive</div>
+                </div>
+              </div>
+              <div class="hv-skill-desc">Reduces the attack speed and movement speed of nearby enemies passively.</div>
+              <div class="hv-skill-stats">
+                <span class="hv-skill-stat">Passive</span>
+                <span class="hv-skill-stat">600 radius</span>
+              </div>
+            </div>
+            <!-- R -->
+            <div class="hv-skill-card" data-skill="R" id="hv-skill-R">
+              <div class="hv-skill-header">
+                <div class="hv-skill-icon">🌀</div>
+                <div class="hv-skill-meta">
+                  <div class="hv-skill-name">Chain Frost</div>
+                  <div class="hv-skill-key">R — Ultimate</div>
+                </div>
+              </div>
+              <div class="hv-skill-desc">Launches a bouncing frost orb that jumps between enemies, dealing damage and slowing.</div>
+              <div class="hv-skill-stats">
+                <span class="hv-skill-stat mana">280 MP</span>
+                <span class="hv-skill-stat cd">145s CD</span>
+                <span class="hv-skill-stat">280 dmg/bounce</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Controls -->
+          <div class="hv-controls">
+            <!-- Sliders -->
+            <div class="hv-slider-group">
+              <div class="hv-slider-row">
+                <span class="hv-slider-label-left">Rotate</span>
+                <input type="range" id="hv-rotate-slider" min="-180" max="180" value="0" step="1" />
+                <span class="hv-slider-val" id="hv-rotate-val">0°</span>
+              </div>
+              <div class="hv-slider-row">
+                <span class="hv-slider-label-left">Zoom</span>
+                <input type="range" id="hv-zoom-slider" min="1" max="10" value="4" step="0.1" />
+                <span class="hv-slider-val" id="hv-zoom-val">4.0</span>
+              </div>
+              <div class="hv-slider-row">
+                <span class="hv-slider-label-left">Roughness</span>
+                <input type="range" id="hv-roughness-slider" min="0" max="1" value="0.65" step="0.01" />
+                <span class="hv-slider-val" id="hv-roughness-val">0.65</span>
+              </div>
+              <div class="hv-slider-row">
+                <span class="hv-slider-label-left">Metalness</span>
+                <input type="range" id="hv-metalness-slider" min="0" max="1" value="0.1" step="0.01" />
+                <span class="hv-slider-val" id="hv-metalness-val">0.10</span>
+              </div>
+            </div>
+
+            <!-- Animation buttons -->
+            <div class="hv-anim-group">
+              <div class="hv-anim-title">Animation</div>
+              <div class="hv-anim-buttons">
+                <button class="hv-anim-btn active" data-anim="idle" id="hv-anim-idle">Idle</button>
+                <button class="hv-anim-btn" data-anim="walk" id="hv-anim-walk">Walk</button>
+                <button class="hv-anim-btn" data-anim="attack" id="hv-anim-attack">Attack</button>
+                <button class="hv-anim-btn" data-anim="cast" id="hv-anim-cast">Cast</button>
+                <button class="hv-anim-btn" data-anim="death" id="hv-anim-death">Death</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hero selector strip -->
+          <div class="hv-hero-strip" id="hv-hero-strip">
+            <!-- Populated by heroViewer.js -->
+          </div>
+
+        </div><!-- /#hero-viewer-panel -->
+      </div>
+    </div>
+
+  </div><!-- /.settings-wrap -->
+</div><!-- /#settings-screen -->
+
+<!-- ══════════════════════════════════════════════════════════
+     LOBBY / HERO SELECT
+════════════════════════════════════════════════════════════ -->
+<div id="lobby" class="screen hidden">
+  <div class="lobby-header">
+    <h2>CHOOSE YOUR HERO</h2>
+    <span id="lobby-mode-label" class="amber-text" style="font-size:11px;letter-spacing:2px;"></span>
+  </div>
+
+  <div class="hero-grid" id="hero-grid">
+    <div class="hero-card" data-hero="lich"><div class="hero-card-icon">🧊</div><div class="hero-card-name">Lich</div></div>
+    <div class="hero-card" data-hero="sniper"><div class="hero-card-icon">🎯</div><div class="hero-card-name">Sniper</div></div>
+    <div class="hero-card" data-hero="dragon-knight"><div class="hero-card-icon">🐉</div><div class="hero-card-name">Dragon Knight</div></div>
+    <div class="hero-card" data-hero="shadow-fiend"><div class="hero-card-icon">👹</div><div class="hero-card-name">Shadow Fiend</div></div>
+    <div class="hero-card" data-hero="windrunner"><div class="hero-card-icon">🌬️</div><div class="hero-card-name">Windrunner</div></div>
+    <div class="hero-card" data-hero="axe"><div class="hero-card-icon">🪓</div><div class="hero-card-name">Axe</div></div>
+    <div class="hero-card" data-hero="pudge"><div class="hero-card-icon">🪝</div><div class="hero-card-name">Pudge</div></div>
+    <div class="hero-card" data-hero="sven"><div class="hero-card-icon">🛡</div><div class="hero-card-name">Sven</div></div>
+    <div class="hero-card" data-hero="tidehunter"><div class="hero-card-icon">🌊</div><div class="hero-card-name">Tidehunter</div></div>
+    <div class="hero-card" data-hero="earthshaker"><div class="hero-card-icon">🌍</div><div class="hero-card-name">Earthshaker</div></div>
+    <div class="hero-card" data-hero="phantom-assassin"><div class="hero-card-icon">🗡️</div><div class="hero-card-name">Phantom Assassin</div></div>
+    <div class="hero-card" data-hero="juggernaut"><div class="hero-card-icon">⚔️</div><div class="hero-card-name">Juggernaut</div></div>
+    <div class="hero-card" data-hero="drow-ranger"><div class="hero-card-icon">🏹</div><div class="hero-card-name">Drow Ranger</div></div>
+    <div class="hero-card" data-hero="bounty-hunter"><div class="hero-card-icon">💰</div><div class="hero-card-name">Bounty Hunter</div></div>
+    <div class="hero-card" data-hero="vengeful-spirit"><div class="hero-card-icon">👻</div><div class="hero-card-name">Vengeful Spirit</div></div>
+    <div class="hero-card" data-hero="crystal-maiden"><div class="hero-card-icon">💎</div><div class="hero-card-name">Crystal Maiden</div></div>
+    <div class="hero-card" data-hero="zeus"><div class="hero-card-icon">⚡</div><div class="hero-card-name">Zeus</div></div>
+    <div class="hero-card" data-hero="lina"><div class="hero-card-icon">🔥</div><div class="hero-card-name">Lina</div></div>
+    <div class="hero-card" data-hero="lion"><div class="hero-card-icon">🦁</div><div class="hero-card-name">Lion</div></div>
+    <div class="hero-card" data-hero="enigma"><div class="hero-card-icon">🌀</div><div class="hero-card-name">Enigma</div></div>
+  </div>
+
+  <div class="lobby-controls">
+    <div class="difficulty-row">
+      <label for="bot-difficulty">Bot Difficulty</label>
+      <select id="bot-difficulty">
+        <option value="easy">Easy</option>
+        <option value="normal" selected>Normal</option>
+        <option value="hard">Hard</option>
+      </select>
+    </div>
+    <div id="lobby-hero-selected" style="font-size:11px;color:#666688;">No hero selected</div>
+  </div>
+
+  <div class="lobby-footer">
+    <button id="btn-lobby-back">BACK</button>
+    <button class="btn-primary" id="btn-lobby-start" disabled>START GAME</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     GAME SCREEN
+════════════════════════════════════════════════════════════ -->
+<div id="game-screen" class="hidden">
+
+  <!-- Three.js WebGL canvas -->
+  <canvas id="game-canvas"></canvas>
+
+  <!-- HUD overlay -->
+  <div id="hud">
+
+    <!-- Top HUD: team strips + center timer -->
+    <div id="top-hud">
+      <div id="ally-strip">
+        <!-- Ally hero dots injected at match start -->
+        <div class="team-hero-dot" title="Ally 1"><span>?</span><div class="hero-hp-bar" style="width:100%"></div></div>
+        <div class="team-hero-dot" title="Ally 2"><span>?</span><div class="hero-hp-bar" style="width:100%"></div></div>
+        <div class="team-hero-dot" title="Ally 3"><span>?</span><div class="hero-hp-bar" style="width:100%"></div></div>
+        <div class="team-hero-dot" title="Ally 4"><span>?</span><div class="hero-hp-bar" style="width:100%"></div></div>
+      </div>
+
+      <div id="center-hud">
+        <div id="match-timer">00:00</div>
+        <div id="day-night-label">☀ DAY</div>
+      </div>
+
+      <div id="enemy-strip">
+        <!-- Enemy hero dots -->
+        <div class="team-hero-dot enemy" title="Enemy 1"><span>?</span><div class="hero-hp-bar" style="width:100%"></div></div>
+        <div class="team-hero-dot enemy" title="Enemy 2"><span>?</span><div class="hero-hp-bar" style="width:100%"></div></div>
+        <div class="team-hero-dot enemy" title="Enemy 3"><span>?</span><div class="hero-hp-bar" style="width:100%"></div></div>
+        <div class="team-hero-dot enemy" title="Enemy 4"><span>?</span><div class="hero-hp-bar" style="width:100%"></div></div>
+        <div class="team-hero-dot enemy" title="Enemy 5"><span>?</span><div class="hero-hp-bar" style="width:100%"></div></div>
+      </div>
+    </div>
+
+    <!-- Minimap -->
+    <div id="minimap-container" class="idle-fadeable">
+      <canvas id="minimap" width="140" height="140"></canvas>
+      <button id="minimap-recenter" class="btn-small">RECENTER</button>
+    </div>
+
+    <!-- Hero HP/MP/XP bars -->
+    <div id="hero-bars" class="idle-fadeable">
+      <div class="bar-row">
+        <span class="bar-label">HP</span>
+        <div class="bar-track">
+          <div class="bar-fill hp" id="bar-hp" style="width:100%"></div>
+        </div>
+        <span class="bar-val" id="bar-hp-val">500/500</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">MP</span>
+        <div class="bar-track">
+          <div class="bar-fill mp" id="bar-mp" style="width:100%"></div>
+        </div>
+        <span class="bar-val" id="bar-mp-val">286/286</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">XP</span>
+        <div class="bar-track">
+          <div class="bar-fill xp" id="bar-xp" style="width:0%"></div>
+        </div>
+        <span class="bar-val" id="bar-xp-val">0/200</span>
+      </div>
+      <div id="level-badge">
+        <span class="lv-label">LV</span>
+        <span class="lv-num" id="hero-level">1</span>
+        <span id="hero-gold" class="gold-text">💰 625</span>
+      </div>
+    </div>
+
+    <!-- Skill bar -->
+    <div id="skill-bar" class="idle-fadeable">
+      <!-- Q -->
+      <div class="skill-btn" id="skill-Q" data-key="Q">
+        <span class="skill-key">Q</span>
+        <span class="skill-icon" id="skill-icon-Q">❄️</span>
+        <span class="skill-mana-cost" id="skill-cost-Q">100</span>
+        <div class="skill-cd-overlay" id="skill-cd-Q" style="--cd-pct:0%"></div>
+        <div class="skill-cd-text hidden" id="skill-cdtext-Q"></div>
+        <button class="skill-learn-btn hidden" id="skill-learn-Q" title="Learn Q">+</button>
+      </div>
+      <!-- W -->
+      <div class="skill-btn" id="skill-W" data-key="W">
+        <span class="skill-key">W</span>
+        <span class="skill-icon" id="skill-icon-W">💀</span>
+        <span class="skill-mana-cost" id="skill-cost-W">0</span>
+        <div class="skill-cd-overlay" id="skill-cd-W" style="--cd-pct:0%"></div>
+        <div class="skill-cd-text hidden" id="skill-cdtext-W"></div>
+        <button class="skill-learn-btn hidden" id="skill-learn-W" title="Learn W">+</button>
+      </div>
+      <!-- E -->
+      <div class="skill-btn" id="skill-E" data-key="E">
+        <span class="skill-key">E</span>
+        <span class="skill-icon" id="skill-icon-E">🛡️</span>
+        <span class="skill-mana-cost" id="skill-cost-E">—</span>
+        <div class="skill-cd-overlay" id="skill-cd-E" style="--cd-pct:0%"></div>
+        <div class="skill-cd-text hidden" id="skill-cdtext-E"></div>
+        <button class="skill-learn-btn hidden" id="skill-learn-E" title="Learn E">+</button>
+      </div>
+      <!-- R -->
+      <div class="skill-btn" id="skill-R" data-key="R">
+        <span class="skill-key">R</span>
+        <span class="skill-icon" id="skill-icon-R">🌀</span>
+        <span class="skill-mana-cost" id="skill-cost-R">280</span>
+        <div class="skill-cd-overlay" id="skill-cd-R" style="--cd-pct:0%"></div>
+        <div class="skill-cd-text hidden" id="skill-cdtext-R"></div>
+        <button class="skill-learn-btn hidden" id="skill-learn-R" title="Learn R">+</button>
+      </div>
+    </div>
+
+    <!-- Shop button -->
+    <button id="shop-button" class="idle-fadeable">🛒 SHOP</button>
+
+    <!-- Inventory -->
+    <div id="inventory-panel" class="idle-fadeable">
+      <div class="inventory-grid">
+        <div class="inv-slot" data-slot="0" title="Item slot 1"></div>
+        <div class="inv-slot" data-slot="1" title="Item slot 2"></div>
+        <div class="inv-slot" data-slot="2" title="Item slot 3"></div>
+        <div class="inv-slot" data-slot="3" title="Item slot 4"></div>
+        <div class="inv-slot" data-slot="4" title="Item slot 5"></div>
+        <div class="inv-slot" data-slot="5" title="Item slot 6"></div>
+      </div>
+    </div>
+
+    <!-- Shop panel (hidden by default) -->
+    <div id="shop-panel" class="hidden">
+      <div class="shop-tabs">
+        <button class="shop-tab active" data-cat="components">Components</button>
+        <button class="shop-tab" data-cat="upgrades">Upgrades</button>
+        <button class="shop-tab" data-cat="consumables">Consumables</button>
+      </div>
+      <div class="shop-body">
+        <div class="shop-item-list" id="shop-item-list">
+          <!-- Populated by shop.js -->
+        </div>
+        <div class="shop-detail" id="shop-detail">
+          <div class="shop-detail-icon" id="shop-det-icon">🧩</div>
+          <div class="shop-detail-name" id="shop-det-name">Select an item</div>
+          <div class="shop-detail-cost" id="shop-det-cost"></div>
+          <div class="shop-detail-desc" id="shop-det-desc">Hover an item to see its details.</div>
+          <div id="shop-det-stats"></div>
+          <button class="shop-buy-btn btn-primary hidden" id="shop-buy-btn">BUY</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Attack button -->
+    <button id="attack-btn">
+      <span class="atk-icon">⚔</span>
+      <span>ATTACK</span>
+    </button>
+
+    <!-- Joystick -->
+    <div id="joystick-zone">
+      <div id="joystick-base"></div>
+      <div id="joystick-knob"></div>
+    </div>
+
+    <!-- Announcer -->
+    <div id="announcer" aria-live="assertive"></div>
+
+  </div><!-- /#hud -->
+
+  <!-- Match end overlay -->
+  <div id="match-end" class="hidden">
+    <div class="result-text" id="match-result-text">VICTORY</div>
+    <div class="result-sub" id="match-result-sub">The Sentinel has destroyed the Frozen Throne!</div>
+    <div class="result-stats">
+      <div class="result-stat">
+        <div class="rs-val" id="rs-kills">0</div>
+        <div class="rs-label">Kills</div>
+      </div>
+      <div class="result-stat">
+        <div class="rs-val" id="rs-deaths">0</div>
+        <div class="rs-label">Deaths</div>
+      </div>
+      <div class="result-stat">
+        <div class="rs-val" id="rs-assists">0</div>
+        <div class="rs-label">Assists</div>
+      </div>
+      <div class="result-stat">
+        <div class="rs-val" id="rs-gold">0</div>
+        <div class="rs-label">Gold Earned</div>
+      </div>
+      <div class="result-stat">
+        <div class="rs-val" id="rs-time">0:00</div>
+        <div class="rs-label">Duration</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:12px;margin-top:12px;">
+      <button id="btn-rematch" class="btn-primary">REMATCH</button>
+      <button id="btn-main-menu-end">MAIN MENU</button>
+    </div>
+  </div>
+
+</div><!-- /#game-screen -->
+
+<!-- Tooltip (global) -->
+<div class="tooltip hidden" id="global-tooltip">
+  <div class="tooltip-title" id="tip-title"></div>
+  <div class="tooltip-desc" id="tip-desc"></div>
+</div>
+
+<!-- Game entry point -->
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

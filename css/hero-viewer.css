@@ -1,0 +1,427 @@
+/* ============================================================
+   hero-viewer.css — Hero Viewer panel styles
+   Scoped under #hero-viewer-panel and .hv- prefix
+   ============================================================ */
+
+/* ── Container ────────────────────────────────────────────────── */
+#hero-viewer-panel {
+  background: #0d0d1a;
+  border: 1px solid #1e1e2e;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+  overflow: hidden;
+  color: #e0d8c8;
+  font-family: 'Segoe UI', 'Courier New', monospace;
+  font-size: 12px;
+}
+
+/* ── Top section: canvas + stats side-by-side ─────────────────── */
+.hv-top {
+  display: flex;
+  gap: 0;
+  min-height: 280px;
+  border-bottom: 1px solid #1e1e2e;
+}
+
+/* ── 3-D canvas viewport ─────────────────────────────────────── */
+.hv-canvas-wrap {
+  flex: 1;
+  position: relative;
+  background: #07070f;
+  border-right: 1px solid #1e1e2e;
+  min-height: 240px;
+  overflow: hidden;
+}
+
+#hv-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+/* Overlay labels on canvas */
+.hv-canvas-label {
+  position: absolute;
+  bottom: 8px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  pointer-events: none;
+}
+
+#hv-hero-name-display {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #ffcc44;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.9);
+}
+
+#hv-hero-role-display {
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: #666688;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+/* ── Stats sidebar ───────────────────────────────────────────── */
+.hv-stats {
+  width: 200px;
+  flex-shrink: 0;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow-y: auto;
+}
+
+.hv-stats-title {
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #666688;
+  border-bottom: 1px solid #1e1e2e;
+  padding-bottom: 4px;
+  margin-bottom: 2px;
+}
+
+.hv-stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px 0;
+}
+
+.hv-stat-label {
+  font-size: 10px;
+  color: #666688;
+  letter-spacing: 0.5px;
+}
+
+.hv-stat-val {
+  font-size: 11px;
+  font-weight: 700;
+  color: #c8a84a;
+  font-variant-numeric: tabular-nums;
+}
+
+.hv-stat-val.str { color: #dd6644; }
+.hv-stat-val.agi { color: #44dd88; }
+.hv-stat-val.int { color: #4488ff; }
+
+/* Attribute primary indicator */
+.hv-attr-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.hv-attr-badge {
+  flex: 1;
+  text-align: center;
+  padding: 4px 2px;
+  border-radius: 3px;
+  border: 1px solid #1e1e2e;
+  font-size: 9px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #666688;
+}
+
+.hv-attr-badge.str-badge { border-color: #663322; color: #dd6644; }
+.hv-attr-badge.agi-badge { border-color: #226633; color: #44dd88; }
+.hv-attr-badge.int-badge { border-color: #223366; color: #4488ff; }
+.hv-attr-badge.primary   { font-weight: 700; background: #12122a; }
+.hv-attr-badge.str-badge.primary { background: #1a0d08; }
+.hv-attr-badge.agi-badge.primary { background: #081a0d; }
+.hv-attr-badge.int-badge.primary { background: #08101a; }
+
+/* Divider within stats */
+.hv-stats-divider {
+  border: none;
+  border-top: 1px solid #1e1e2e;
+  margin: 4px 0;
+}
+
+/* ── Skill grid ──────────────────────────────────────────────── */
+.hv-skills {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  border-bottom: 1px solid #1e1e2e;
+  flex-wrap: wrap;
+}
+
+.hv-skill-card {
+  flex: 1;
+  min-width: 120px;
+  max-width: 160px;
+  background: #07070f;
+  border: 1px solid #1e1e2e;
+  border-radius: 3px;
+  padding: 8px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.hv-skill-card:hover { border-color: #5555aa; background: #0d0d1a; }
+.hv-skill-card.selected { border-color: #ffcc44; background: #12120a; }
+
+.hv-skill-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.hv-skill-icon {
+  font-size: 22px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.hv-skill-meta {
+  flex: 1;
+  overflow: hidden;
+}
+
+.hv-skill-name {
+  font-size: 10px;
+  font-weight: 700;
+  color: #e0d8c8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hv-skill-key {
+  font-size: 8px;
+  letter-spacing: 1px;
+  color: #666688;
+  text-transform: uppercase;
+  margin-top: 1px;
+}
+
+.hv-skill-desc {
+  font-size: 9px;
+  color: #666688;
+  line-height: 1.5;
+}
+
+.hv-skill-stats {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+
+.hv-skill-stat {
+  font-size: 8px;
+  color: #c8a84a;
+  background: #111128;
+  border: 1px solid #1e1e2e;
+  border-radius: 2px;
+  padding: 1px 5px;
+}
+
+.hv-skill-stat.mana { color: #88aaff; }
+.hv-skill-stat.cd   { color: #88ccff; }
+
+/* ── Controls: sliders and animation buttons ─────────────────── */
+.hv-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 12px;
+  border-bottom: 1px solid #1e1e2e;
+  align-items: flex-start;
+}
+
+.hv-slider-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 140px;
+}
+
+.hv-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hv-slider-label {
+  font-size: 9px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #666688;
+  width: 52px;
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.hv-slider-label-left {
+  font-size: 9px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #666688;
+  width: 72px;
+  flex-shrink: 0;
+}
+
+#hv-rotate-slider,
+#hv-zoom-slider,
+#hv-roughness-slider,
+#hv-metalness-slider {
+  flex: 1;
+  accent-color: #ffcc44;
+  cursor: pointer;
+  height: 3px;
+  background: #1e1e2e;
+  border-radius: 2px;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+#hv-rotate-slider::-webkit-slider-thumb,
+#hv-zoom-slider::-webkit-slider-thumb,
+#hv-roughness-slider::-webkit-slider-thumb,
+#hv-metalness-slider::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ffcc44;
+  cursor: pointer;
+  border: none;
+}
+
+.hv-slider-val {
+  font-size: 10px;
+  color: #c8a84a;
+  width: 32px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Animation buttons */
+.hv-anim-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.hv-anim-title {
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #666688;
+}
+
+.hv-anim-buttons {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.hv-anim-btn {
+  padding: 4px 8px;
+  font-size: 9px;
+  letter-spacing: 0.5px;
+  background: #07070f;
+  border: 1px solid #1e1e2e;
+  border-radius: 3px;
+  color: #666688;
+  cursor: pointer;
+  transition: border-color 0.1s, color 0.1s;
+}
+
+.hv-anim-btn:hover { border-color: #5555aa; color: #e0d8c8; }
+.hv-anim-btn.active { border-color: #ffcc44; color: #ffcc44; background: #12120a; }
+
+/* ── Hero selector strip (bottom of viewer) ─────────────────── */
+.hv-hero-strip {
+  display: flex;
+  gap: 4px;
+  padding: 8px 12px;
+  overflow-x: auto;
+  background: #07070f;
+  scrollbar-width: thin;
+  scrollbar-color: #1e1e2e transparent;
+}
+
+.hv-hero-strip::-webkit-scrollbar { height: 3px; }
+.hv-hero-strip::-webkit-scrollbar-thumb { background: #1e1e2e; border-radius: 2px; }
+
+.hv-strip-hero {
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 3px;
+  background: #0d0d1a;
+  border: 1px solid #1e1e2e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+  transition: border-color 0.1s;
+  position: relative;
+}
+
+.hv-strip-hero:hover { border-color: #5555aa; }
+.hv-strip-hero.active { border-color: #ffcc44; background: #12120a; }
+
+.hv-strip-hero-name {
+  position: absolute;
+  bottom: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 7px;
+  color: #666688;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* ── Responsive ──────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .hv-top {
+    flex-direction: column;
+    min-height: unset;
+  }
+
+  .hv-canvas-wrap {
+    border-right: none;
+    border-bottom: 1px solid #1e1e2e;
+    min-height: 200px;
+  }
+
+  .hv-stats {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .hv-stat-row {
+    width: calc(50% - 4px);
+  }
+
+  .hv-skill-card {
+    min-width: 90px;
+  }
+
+  .hv-controls {
+    gap: 8px;
+  }
+}
